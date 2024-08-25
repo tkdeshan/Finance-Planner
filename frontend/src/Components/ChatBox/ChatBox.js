@@ -147,7 +147,7 @@ const ChatBoxStyled = styled.div`
     .user-message {
       margin-left: auto;
       align-self: flex-end;
-      background: #e6e8e6;
+      background: #e6e8e8;
       color: #000;
       text-align: right;
     }
