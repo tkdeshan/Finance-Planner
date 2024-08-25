@@ -1,10 +1,12 @@
 const IncomeSchema = require("../models/IncomeModel");
-const axios = require('axios');
+const axios = require("axios");
 
 exports.addIncome = async (req, res) => {
   const { title, amount, description, category, type, date } = req.body;
+  const userId = req.user._id;
 
   const income = new IncomeSchema({
+    userId,
     title,
     type,
     amount,
@@ -12,7 +14,6 @@ exports.addIncome = async (req, res) => {
     category,
     date,
   });
-  console.log(income);
 
   try {
     //validations
@@ -22,7 +23,6 @@ exports.addIncome = async (req, res) => {
     if (amount < 0 || !amount === "number") {
       return res.status(400).json({ msg: "Amount cannot be negative" });
     }
-    console.log(income);
     await income.save();
     res.status(200).json({ msg: "Income added successfully" });
   } catch (error) {
@@ -32,8 +32,13 @@ exports.addIncome = async (req, res) => {
 
 exports.getIncomes = async (req, res) => {
   try {
-    const income = await IncomeSchema.find();
-    res.status(200).json(income);
+    const userId = req.user._id;
+    const incomes = await IncomeSchema.find({ userId });
+    if (incomes.length === 0) {
+      return res.status(404).json({ msg: "No incomes found" });
+    }
+
+    res.status(200).json(incomes);
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
   }
@@ -87,20 +92,20 @@ exports.updateIncome = async (req, res) => {
 exports.getIncomeRecommendation = async (req, res) => {
   try {
     // Step 1: Fetch all investments with category and amount
-    const Incomes = await IncomeSchema.find().select('category amount');
+    const Incomes = await IncomeSchema.find().select("category amount");
 
     // Step 2: Format the data as required by the external API
-    const formattedData = Incomes.map(Income => `('${Income.category}',${Income.amount})`).join(',');
+    const formattedData = Incomes.map((Income) => `('${Income.category}',${Income.amount})`).join(",");
 
     const requestData = {
       rectype: "income",
-      data: `[${formattedData}]`
+      data: `[${formattedData}]`,
     };
 
     console.log("Post Data:", requestData);
 
     // Step 3: Send the data to the external API
-    const apiUrl = 'https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend';
+    const apiUrl = "https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend";
     const response = await axios.post(apiUrl, requestData);
 
     // Step 4: Return the API response to the client
@@ -110,4 +115,3 @@ exports.getIncomeRecommendation = async (req, res) => {
     res.status(500).json({ msg: "Server Error" });
   }
 };
-

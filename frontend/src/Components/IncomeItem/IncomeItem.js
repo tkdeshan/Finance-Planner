@@ -22,6 +22,7 @@ import {
   tv,
   users,
   yt,
+  chat,
 } from "../../utils/icons";
 import EditModal from "../UpdateIncome/updateIncome";
 import Button from "../Button/Button";
@@ -30,7 +31,7 @@ import Swal from "sweetalert2";
 
 function IncomeItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const { updateIncome, setError } = useGlobalContext();
+  const { updateIncome, setError, getIncomes } = useGlobalContext();
 
   const handleEdit = () => {
     setModalOpen(true);
@@ -50,14 +51,11 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
         text: "Income updated successfully",
         icon: "success",
         confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload(); // Refresh the page after clicking OK
-        }
       });
       handleClose();
+      getIncomes();
     } else {
-      console.error("Failed to update item:", updatedItem);
+      console.error("Failed to update item:");
     }
   };
 
@@ -153,35 +151,25 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
     }
   };
 
-  console.log("type", type);
-
   return (
     <>
       {" "}
       <IncomeItemStyled indicator={indicatorColor}>
-        <div className="icon">
-          {type === "expense" ? expenseCatIcon() : categoryIcon()}
-        </div>
+        <div className="icon">{type === "expense" ? expenseCatIcon() : categoryIcon()}</div>
         <div className="content">
           <h5>{title}</h5>
           <div className="inner-content">
             <div className="text">
-              <p>
-                LKR {amount}
-              </p>
+              <p>LKR {amount}</p>
               <p>
                 {calender} {dateFormat(date)}
-              </p>
-              <p>
-                {comment}
-                {description}
               </p>
             </div>
 
             <div className="btn-con">
               <Button
                 icon={edit}
-                bPad={"1rem"}
+                bPad={"0.6rem"}
                 bRad={"50%"}
                 bg={"var(--primary-color)"}
                 color={"#fff"}
@@ -191,7 +179,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
               />
               <Button
                 icon={trash}
-                bPad={"1rem"}
+                bPad={"0.6rem"}
                 bRad={"50%"}
                 bg={"var(--primary-color)"}
                 color={"#fff"}
@@ -199,8 +187,18 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
                 hColor={"var(--color-green)"}
                 onClick={() => deleteItem(id)}
               />
+              <Button
+                icon={chat}
+                bPad={"0.6rem"}
+                bRad={"50%"}
+                bg={"var(--primary-color)"}
+                color={"#fff"}
+                iColor={"#fff"}
+                hColor={"var(--color-green)"}
+              />
             </div>
           </div>
+          <p>{description}</p>
         </div>
       </IncomeItemStyled>
       <EditModal

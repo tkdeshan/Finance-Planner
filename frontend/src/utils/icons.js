@@ -31,4 +31,5 @@ export const investments = <i class="fa-solid fa-hand-holding-dollar"></i>;
 export const savings = <i class="fa-solid fa-piggy-bank"></i>;
 export const signup = <i className="fa-solid fa-user-plus"></i>;
 export const signin = <i className="fa-solid fa-sign-in-alt"></i>;
-export const edit = <i className = "fa-solid fa-edit"></i>;
+export const edit = <i className="fa-solid fa-edit"></i>;
+export const chat = <i className="fa-solid fa-message"></i>;

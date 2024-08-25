@@ -1,13 +1,37 @@
-const { addIncome, getIncomes, deleteIncome, updateIncome ,getIncomeRecommendation} = require("../controllers/income");
-const { addExpense, getExpenses, deleteExpense, updateExpense ,getExpenseRecommendation} = require("../controllers/expense");
-const { addSaving, getSavings, deleteSaving, updateSaving ,getRecommendation} = require("../controllers/saving");
-const { addInvestment, getInvestments, deleteInvestment,getInvestmentRecommendation, updateInvestment } = require("../controllers/investment");
+const {
+  addIncome,
+  getIncomes,
+  deleteIncome,
+  updateIncome,
+  getIncomeRecommendation,
+} = require("../controllers/income");
+const {
+  addExpense,
+  getExpenses,
+  deleteExpense,
+  updateExpense,
+  getExpenseRecommendation,
+} = require("../controllers/expense");
+const {
+  addSaving,
+  getSavings,
+  deleteSaving,
+  updateSaving,
+  getRecommendation,
+} = require("../controllers/saving");
+const {
+  addInvestment,
+  getInvestments,
+  deleteInvestment,
+  getInvestmentRecommendation,
+  updateInvestment,
+} = require("../controllers/investment");
 const router = require("express").Router();
-const verifyToken = require('../middleware/verifyToken');
+const verifyToken = require("../middleware/verifyToken");
 
 //Income Routes
-router.post("/add-income", addIncome);
-router.get("/get-incomes", getIncomes);
+router.post("/add-income", verifyToken, addIncome);
+router.get("/get-incomes", verifyToken, getIncomes);
 router.delete("/delete-income/:id", deleteIncome);
 router.put("/update-income/:id", updateIncome);
 router.get("/get-income-recommendation", getIncomeRecommendation);
@@ -33,13 +57,11 @@ router.delete("/delete-investment/:id", deleteInvestment);
 router.put("/update-investment/:id", updateInvestment);
 router.get("/get-invest-recommendation", getInvestmentRecommendation);
 
-
 //GPT Recommendation
 // router.post("/recommendation", async (req, res) => {
 //   const { category, amount } = req.body;
 //     const recommendation = await getRecommendation(category, amount);
 //     res.json(recommendation);
 // });
-
 
 module.exports = router;

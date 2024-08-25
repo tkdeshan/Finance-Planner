@@ -7,6 +7,7 @@ import Button from "../Button/Button";
 import { plus } from "../../utils/icons";
 import Popup from "../Popup/Popup";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function Form() {
   const { addIncome, getIncomes, error, setError } = useGlobalContext();
@@ -21,6 +22,7 @@ function Form() {
   const [recommendations, setRecommendations] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isModalOpen, setModalOpen] = useState(false);
   const { title, amount, date, category, description } = inputState;
 
   const handleInput = (name) => (e) => {
@@ -45,9 +47,27 @@ function Form() {
     setIsPopupOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addIncome(inputState);
+    const result = await addIncome(inputState);
+
+    if (result === "success") {
+      Swal.fire({
+        title: "Success!",
+        text: "Income created successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      })
+      handleClose();
+      getIncomes();
+    } else {
+      console.error("Failed to create item:");
+    }
+
     setInputState({
       title: "",
       amount: "",
@@ -63,6 +83,7 @@ function Form() {
       <div className="input-control">
         <input
           type="text"
+          required
           value={title}
           name={"title"}
           placeholder="Salary Title"
@@ -72,7 +93,8 @@ function Form() {
       <div className="input-control">
         <input
           value={amount}
-          type="text"
+          required
+          type="number"
           name={"amount"}
           placeholder={"Salary Amount"}
           onChange={handleInput("amount")}
@@ -83,6 +105,7 @@ function Form() {
           id="date"
           placeholderText="Enter A Date"
           selected={date}
+          required
           dateFormat="dd/MM/yyyy"
           onChange={(date) => {
             setInputState({ ...inputState, date: date });
@@ -90,12 +113,7 @@ function Form() {
         />
       </div>
       <div className="selects input-control">
-        <select
-          //required
-          value={category}
-          name="category"
-          id="category"
-          onChange={handleInput("category")}>
+        <select required value={category} name="category" id="category" onChange={handleInput("category")}>
           <option value="" disabled>
             Select Option
           </option>
@@ -111,6 +129,7 @@ function Form() {
       </div>
       <div className="input-control">
         <textarea
+          required
           name="description"
           value={description}
           placeholder="Add A Reference"
@@ -129,19 +148,6 @@ function Form() {
           color={"#fff"}
         />
       </div>
-      <div className="gpt-btn">
-        <Button
-          name={isLoading ? "Loading..." : "Generate Recommendations"} // Button text changes on loading
-          icon={isLoading ? null : plus} // Remove icon during loading
-          bPad={".8rem 1.6rem"}
-          bRad={"30px"}
-          bg={isLoading ? "#999" : "var(--color-accent"} // Button color changes during loading
-          color={"#fff"}
-          onClick={handleGetRecommendations}
-          disabled={isLoading || !category} // Disable button during loading or if no category is selected
-        />
-      </div>
-
       <Popup isOpen={isPopupOpen} onClose={handleClosePopup}>
         <h2>Income Recommendations</h2>
         <p>{recommendations}</p>

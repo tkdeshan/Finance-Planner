@@ -1,38 +1,43 @@
-const mongoose = require('mongoose');
+const { required } = require("joi");
+const mongoose = require("mongoose");
 
-const IncomeSchema = new mongoose.Schema({
+const IncomeSchema = new mongoose.Schema(
+  {
+    userId: { type: String, required: true },
     title: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 50
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 50,
     },
     amount: {
-        type: Number,
-        required: true,
-        trim: true,
-        maxlength: 20
+      type: Number,
+      required: true,
+      trim: true,
+      maxlength: 20,
     },
     type: {
-        type: String,
-        default: "income",
+      type: String,
+      default: "income",
     },
     date: {
-        type: Date,
-        required: true,
-        trim: true,
+      type: Date,
+      required: true,
+      trim: true,
     },
     category: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
     description: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 100,
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
     },
-}, {timestamps: true})
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Income', IncomeSchema) 
+module.exports = mongoose.model("Income", IncomeSchema);

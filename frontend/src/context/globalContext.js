@@ -33,13 +33,21 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  //calculate incomes
+  //add income
   const addIncome = async (income) => {
-    console.log(income);
-    const response = await axios.post(`${BASE_URL}/add-income`, income).catch((err) => {
-      setError(err.response.data.message);
-    });
-    getIncomes();
+    const token = getToken();
+
+    try {
+      const response = await axios.post(`${BASE_URL}/add-income`, income, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return "success";
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred while adding income");
+    }
   };
 
   const updateIncome = async (income) => {
@@ -51,9 +59,13 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getIncomes = async () => {
-    const response = await axios.get(`${BASE_URL}/get-incomes`);
+    const token = getToken();
+    const response = await axios.get(`${BASE_URL}/get-incomes`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setIncomes(response.data);
-    console.log(response.data);
   };
 
   const deleteIncome = async (id) => {
