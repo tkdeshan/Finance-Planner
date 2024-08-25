@@ -1,5 +1,6 @@
 const IncomeSchema = require("../models/IncomeModel");
 const axios = require("axios");
+const sendRequestToGemini = require("../gemini");
 
 exports.addIncome = async (req, res) => {
   const { title, amount, description, category, type, date } = req.body;
@@ -91,27 +92,21 @@ exports.updateIncome = async (req, res) => {
 
 exports.getIncomeRecommendation = async (req, res) => {
   try {
+    const { id } = req.params;
     // Step 1: Fetch all investments with category and amount
-    const Incomes = await IncomeSchema.find().select("category amount");
+    const Income = await IncomeSchema.findById(id).select("title category amount");
 
     // Step 2: Format the data as required by the external API
-    const formattedData = Incomes.map((Income) => `('${Income.category}',${Income.amount})`).join(",");
-
-    const requestData = {
-      rectype: "income",
-      data: `[${formattedData}]`,
-    };
-
-    console.log("Post Data:", requestData);
+    const formattedData =
+      `${Income.category}','${Income.title}',${Income.amount}` +
+      "please give recommendations to increase this income.";
 
     // Step 3: Send the data to the external API
-    const apiUrl = "https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend";
-    const response = await axios.post(apiUrl, requestData);
+    const textContent = await sendRequestToGemini(formattedData);
 
     // Step 4: Return the API response to the client
-    res.status(200).json(response.data);
+    res.status(200).json(textContent);
   } catch (error) {
-    console.error("Error fetching investment recommendation:", error.message);
     res.status(500).json({ msg: "Server Error" });
   }
 };

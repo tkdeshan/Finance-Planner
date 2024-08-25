@@ -27,12 +27,15 @@ import EditModal from "../UpdateIncome/updateIncome";
 import Button from "../Button/Button";
 import { useGlobalContext } from "../../context/globalContext";
 import Swal from "sweetalert2";
-import ChatBox from "../ChatBox/ChatBox"; // Import the ChatBox component
+import ChatBox from "../ChatBox/ChatBox";
+import axios from "axios";
 
 function IncomeItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isChatOpen, setChatOpen] = useState(false); // State to control chat box visibility
   const { updateIncome, setError, getIncomes } = useGlobalContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState("");
 
   const handleEdit = () => {
     setModalOpen(true);
@@ -59,6 +62,26 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
       getIncomes();
     } else {
       console.error("Failed to update item:");
+    }
+  };
+
+  const handleGetRecommendations = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/get-income-recommendation/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setRecommendations(response.data);
+      if (response) {
+        setChatOpen(!isChatOpen);
+      }
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
     }
   };
 
@@ -151,7 +174,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
                 color={"#fff"}
                 iColor={"#fff"}
                 hColor={"var(--color-green)"}
-                onClick={() => setChatOpen(!isChatOpen)} // Toggle chat box visibility
+                onClick={handleGetRecommendations}
               />
             </div>
           </div>
@@ -164,7 +187,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
-      {isChatOpen && <ChatBox isOpen={isChatOpen} onClose={() => setChatOpen(false)} />}
+      {isChatOpen && <ChatBox isOpen={isChatOpen} recommendations={recommendations} onClose={() => setChatOpen(false)} />}
     </>
   );
 }

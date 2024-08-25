@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Button from "../Button/Button";
-import { sendMessage, closeButton } from "../../utils/icons"; 
+import { sendMessage, closeButton } from "../../utils/icons";
 
-const ChatBox = ({ isOpen, onClose }) => {
+const ChatBox = ({ isOpen, onClose, recommendations }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -23,6 +23,7 @@ const ChatBox = ({ isOpen, onClose }) => {
               <h4>Chat</h4>
               <Button icon={closeButton} onClick={onClose} />
             </div>
+            <div className="messages">{recommendations}</div>
             <div className="messages">
               {messages.map((msg, index) => (
                 <p key={index}>{msg}</p>
@@ -58,8 +59,8 @@ const Overlay = styled.div`
 `;
 
 const ChatBoxStyled = styled.div`
-  width: 500px; 
-  max-height: 500px; 
+  width: 500px;
+  max-height: 500px;
   overflow: auto;
   background: #fff;
   border: 1px solid #ddd;
@@ -78,8 +79,8 @@ const ChatBoxStyled = styled.div`
 
   .messages {
     display: flex;
-    flex-direction: column; 
-    padding: 0.5rem;
+    flex-direction: column;
+    padding: 1rem;
     overflow-y: auto;
     border-bottom: 1px solid #ddd;
   }

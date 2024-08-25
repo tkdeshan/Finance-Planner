@@ -32,9 +32,9 @@ const verifyToken = require("../middleware/verifyToken");
 //Income Routes
 router.post("/add-income", verifyToken, addIncome);
 router.get("/get-incomes", verifyToken, getIncomes);
-router.delete("/delete-income/:id", deleteIncome);
-router.put("/update-income/:id", updateIncome);
-router.get("/get-income-recommendation", getIncomeRecommendation);
+router.delete("/delete-income/:id", verifyToken, deleteIncome);
+router.put("/update-income/:id", verifyToken, updateIncome);
+router.get("/get-income-recommendation/:id", verifyToken, getIncomeRecommendation);
 
 //Expense Routes
 router.post("/add-expense", addExpense);

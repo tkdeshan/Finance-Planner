@@ -14,7 +14,6 @@ export const GlobalProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Function to get JWT token from local storage
   const getToken = () => {
     return localStorage.getItem("token");
   };
@@ -33,12 +32,11 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  //add income
   const addIncome = async (income) => {
     const token = getToken();
 
     try {
-      const response = await axios.post(`${BASE_URL}/add-income`, income, {
+      await axios.post(`${BASE_URL}/add-income`, income, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -51,10 +49,16 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const updateIncome = async (income) => {
-    const response = await axios.put(`${BASE_URL}/update-income/${income.id}`, income).catch((err) => {
-      setError(err.response.data.message);
-      console.log("🚀 ~ updateIncome ~ response:", response);
-    });
+    const token = getToken();
+    await axios
+      .put(`${BASE_URL}/update-income/${income.id}`, income, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
     return "success";
   };
 
@@ -69,7 +73,12 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const deleteIncome = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/delete-income/${id}`);
+    const token = getToken();
+    await axios.delete(`${BASE_URL}/delete-income/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     getIncomes();
   };
 
