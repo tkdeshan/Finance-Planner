@@ -164,7 +164,6 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
-      {/* Render ChatBox conditionally based on isChatOpen */}
       {isChatOpen && <ChatBox isOpen={isChatOpen} onClose={() => setChatOpen(false)} />}
     </>
   );
