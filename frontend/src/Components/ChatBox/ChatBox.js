@@ -121,6 +121,8 @@ const ChatBoxStyled = styled.div`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  position: relative; /* Set position to relative */
+  z-index: 10000; /* Ensure it is below the ChatBox */
 
   .header {
     padding: 0.5rem;
