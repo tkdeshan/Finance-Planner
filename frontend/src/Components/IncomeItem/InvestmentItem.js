@@ -66,7 +66,8 @@ function InvestmentItem({
           text: "Investment updated successfully",
           icon: "success",
           confirmButtonText: "OK",
-        }).then(() => window.location.reload()); // Refresh after success
+        });
+        
         handleClose();
         getInvestments();
       }
@@ -80,7 +81,7 @@ function InvestmentItem({
     const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/api/v1/get-investment-recommendation/${id}`,
+        `${process.env.REACT_APP_BASE_URL}/api/v1/get-invest-recommendation/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -211,7 +212,7 @@ function InvestmentItem({
           <Loader />
         ) : (
           <>
-            <div className="icon">{type === "expense" ? expenseCatIcon() : categoryIcon()}</div>
+            <div className="icon">{type === "investment" ? investmentCatIcon() : categoryIcon()}</div>
             <div className="content">
               <h5>{title}</h5>
               <div className="inner-content">
@@ -219,9 +220,6 @@ function InvestmentItem({
                   <p>LKR {amount}</p>
                   <p>
                     {calender} {dateFormat(date)}
-                  </p>
-                  <p>
-                    {comment} {description}
                   </p>
                 </div>
                 <div className="btn-con">
@@ -257,6 +255,7 @@ function InvestmentItem({
                   />
                 </div>
               </div>
+              <p>{description}</p>
             </div>
           </>
         )}

@@ -48,7 +48,7 @@ router.post("/add-saving", verifyToken, addSaving);
 router.get("/get-savings", verifyToken, getSavings);
 router.delete("/delete-saving/:id", verifyToken, deleteSaving);
 router.put("/update-saving/:id", verifyToken, updateSaving);
-router.get("/get-recommendation/:id", verifyToken, getRecommendation);
+router.get("/get-saving-recommendation/:id", verifyToken, getRecommendation);
 
 //Investment Routes
 router.post("/add-investment", verifyToken, addInvestment);
