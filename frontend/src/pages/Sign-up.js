@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const styles = {
   signupContainer: {
@@ -14,8 +15,10 @@ const styles = {
   signupFormContainer: {
     width: "900px",
     height: "500px",
+    maxHeight: "auto",
     display: "flex",
     borderRadius: "10px",
+    backgroundColor: "#ffffff",
     boxShadow:
       "0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%)",
   },
@@ -23,8 +26,9 @@ const styles = {
     flex: 2,
     display: "flex",
     flexDirection: "column",
-    paddingLeft: "70px",
     justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
     backgroundColor: "#FF69B4",
     borderTopLeftRadius: "10px",
     borderBottomLeftRadius: "10px",
@@ -43,7 +47,8 @@ const styles = {
     backgroundColor: "#ffffff",
     borderTopRightRadius: "10px",
     borderBottomRightRadius: "10px",
-    padding: "70px",
+    margin: "20px auto 10px auto",
+    padding: "0 60px 0 60px",
   },
   formContainer: {
     display: "flex",
@@ -54,6 +59,11 @@ const styles = {
     fontSize: "40px",
     marginTop: 0,
   },
+  inputContainer: {
+    position: "relative",
+    width: "370px",
+    margin: "5px 0",
+  },
   input: {
     outline: "none",
     border: "none",
@@ -62,8 +72,14 @@ const styles = {
     borderRadius: "10px",
     backgroundColor: "#F7FAFC",
     marginTop: "25px",
-    marginLeft: "10px",
     fontSize: "14px",
+  },
+  eyeIcon: {
+    position: "absolute",
+    top: "70%",
+    right: "10px",
+    transform: "translateY(-50%)",
+    cursor: "pointer",
   },
   errorMsg: {
     width: "370px",
@@ -139,6 +155,7 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -146,16 +163,21 @@ const Signup = () => {
     setData({ ...data, [input.name]: input.value });
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = `${process.env.REACT_APP_BASE_URL}/api/v1/auth/register`;
-      const { data: res } = await axios.post(url, data);
+      const { data: res } = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/v1/auth/register`, data);
       navigate("/");
       console.log(res.message);
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message);
+      } else {
+        setError("Server error. Please try again!");
       }
     }
   };
@@ -201,15 +223,19 @@ const Signup = () => {
               required
               style={styles.input}
             />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              onChange={handleChange}
-              value={data.password}
-              required
-              style={styles.input}
-            />
+            <div style={styles.inputContainer}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                name="password"
+                onChange={handleChange}
+                value={data.password}
+                style={styles.input}
+              />
+              <div style={styles.eyeIcon} onClick={togglePasswordVisibility}>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+            </div>
             {error && <div style={styles.errorMsg}>{error}</div>}
             <button type="submit" style={styles.greenBtn}>
               Sign Up
