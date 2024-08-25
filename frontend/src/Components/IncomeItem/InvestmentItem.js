@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { dateFormat } from "../../utils/dateFormat";
 import {
@@ -9,7 +9,6 @@ import {
   circle,
   clothing,
   comment,
-  LKR,
   food,
   freelance,
   medical,
@@ -22,11 +21,15 @@ import {
   tv,
   users,
   yt,
+  chat,
 } from "../../utils/icons";
 import EditModal from "../UpdateIncome/updateIncome";
 import Button from "../Button/Button";
 import { useGlobalContext } from "../../context/globalContext";
 import Swal from "sweetalert2";
+import ChatBox from "../ChatBox/ChatBox";
+import Loader from "../Loader/Loader";
+import axios from "axios";
 
 function InvestmentItem({
   id,
@@ -40,34 +43,64 @@ function InvestmentItem({
   type,
 }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const { updateInvestment, setError } = useGlobalContext();
+  const [isChatOpen, setChatOpen] = useState(false);
+  const { updateInvestment, setError, getInvestments } = useGlobalContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState("");
+  const [request, setRequest] = useState("");
 
   const handleEdit = () => {
     setModalOpen(true);
   };
+
   const handleClose = () => {
     setModalOpen(false);
   };
-  const handleUpdate = async (updatedItem) => {
-    const result = await updateInvestment(updatedItem).catch((err) => {
-      console.error("Update failed:", err);
-      setError(err.response?.data.message || "Failed to update investment.");
-    });
 
-    if (result === "success") {
-      Swal.fire({
-        title: "Success!",
-        text: "Investment updated successfully",
-        icon: "success",
-        confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload(); // Refresh the page after clicking OK
+  const handleUpdate = async (updatedItem) => {
+    try {
+      const result = await updateInvestment(updatedItem);
+      if (result === "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Investment updated successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => window.location.reload()); // Refresh after success
+        handleClose();
+        getInvestments();
+      }
+    } catch (err) {
+      setError(err.response?.data.message || "Failed to update investment.");
+    }
+  };
+
+  const handleGetRecommendations = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/get-investment-recommendation/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      handleClose();
-    } else {
-      console.error("Failed to update item:", updatedItem);
+      );
+
+      if (response?.data) {
+        const formattedRecommendations = response.data.recommendations
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
+          .replace(/\*/g, "<br><br>"); // New line
+
+        setRequest(response.data.formattedData);
+        setRecommendations(formattedRecommendations);
+        setChatOpen(!isChatOpen);
+      }
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -167,58 +200,75 @@ function InvestmentItem({
 
   return (
     <>
-      {" "}
-      <InvestmentItemStyled indicator={indicatorColor}>
-        <div className="icon">
-          {type === "expense" ? expenseCatIcon() : categoryIcon()}
-        </div>
-        <div className="content">
-          <h5>{title}</h5>
-          <div className="inner-content">
-            <div className="text">
-              <p>
-                LKR {amount}
-              </p>
-              <p>
-                {calender} {dateFormat(date)}
-              </p>
-              <p>
-                {comment}
-                {description}
-              </p>
-            </div>
-
-            <div className="btn-con">
-              <Button
-                icon={edit}
-                bPad={"1rem"}
-                bRad={"50%"}
-                bg={"var(--primary-color)"}
-                color={"#fff"}
-                iColor={"#fff"}
-                hColor={"var(--color-green)"}
-                onClick={handleEdit}
-              />
-              <Button
-                icon={trash}
-                bPad={"1rem"}
-                bRad={"50%"}
-                bg={"var(--primary-color)"}
-                color={"#fff"}
-                iColor={"#fff"}
-                hColor={"var(--color-green)"}
-                onClick={() => deleteItem(id)}
-              />
-            </div>
-          </div>
-        </div>
-      </InvestmentItemStyled>
       <EditModal
         isOpen={isModalOpen}
         onClose={handleClose}
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
+      <InvestmentItemStyled indicator={indicatorColor}>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <div className="icon">{type === "expense" ? expenseCatIcon() : categoryIcon()}</div>
+            <div className="content">
+              <h5>{title}</h5>
+              <div className="inner-content">
+                <div className="text">
+                  <p>LKR {amount}</p>
+                  <p>
+                    {calender} {dateFormat(date)}
+                  </p>
+                  <p>
+                    {comment} {description}
+                  </p>
+                </div>
+                <div className="btn-con">
+                  <Button
+                    icon={edit}
+                    bPad={"1rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={handleEdit}
+                  />
+                  <Button
+                    icon={trash}
+                    bPad={"1rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={() => deleteItem(id)}
+                  />
+                  <Button
+                    icon={chat}
+                    bPad={"1rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={handleGetRecommendations}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </InvestmentItemStyled>
+      {isChatOpen && (
+        <ChatBox
+          isOpen={isChatOpen}
+          recommendations={recommendations}
+          request={request}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </>
   );
 }
@@ -235,6 +285,7 @@ const InvestmentItemStyled = styled.div`
   gap: 1rem;
   width: 100%;
   color: #222260;
+
   .icon {
     width: 80px;
     height: 80px;
@@ -254,6 +305,7 @@ const InvestmentItemStyled = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+
     h5 {
       font-size: 1.3rem;
       padding-left: 2rem;
@@ -282,6 +334,7 @@ const InvestmentItemStyled = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       .text {
         display: flex;
         align-items: center;

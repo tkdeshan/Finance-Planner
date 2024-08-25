@@ -1,10 +1,13 @@
 const SavingSchema = require("../models/SavingModel");
-const axios = require('axios');
+const axios = require("axios");
+const sendRequestToGemini = require("../gemini");
 
 exports.addSaving = async (req, res) => {
   const { title, amount, description, category, type, date } = req.body;
+  const userId = req.user._id;
 
   const saving = new SavingSchema({
+    userId,
     title,
     type,
     amount,
@@ -30,7 +33,8 @@ exports.addSaving = async (req, res) => {
 
 exports.getSavings = async (req, res) => {
   try {
-    const saving = await SavingSchema.find();
+    const userId = req.user._id;
+    const saving = await SavingSchema.find({ userId });
     res.status(200).json(saving);
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
@@ -49,7 +53,6 @@ exports.deleteSaving = async (req, res) => {
 };
 
 exports.updateSaving = async (req, res) => {
-  console.log("🚀 ~ exports.updateSaving= ~ req:", req.body);
   const { id } = req.params;
   const updateData = req.body;
 
@@ -76,42 +79,30 @@ exports.updateSaving = async (req, res) => {
     console.error("Error updating saving:", err);
     // Handling specific Mongoose error codes here if needed
     if (err.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({ msg: "Validation Error", errors: err.errors });
+      return res.status(400).json({ msg: "Validation Error", errors: err.errors });
     }
     return res.status(500).json({ msg: "Server Error" });
   }
 };
 
-
 exports.getRecommendation = async (req, res) => {
   try {
+    const { id } = req.params;
+
     // Fetch savings data from your database
-    const savings = await SavingSchema.find().select('category amount');
-    
+    const saving = await SavingSchema.findById(id).select("title category amount");
+
     // Format the savings data as required
-    const formattedData = savings.map(saving => `('${saving.category}',${saving.amount})`).join(',');
+    const formattedData = `${saving.category} ${saving.title} ${saving.amount}LKR. Please give recommendations for increase saving.`;
 
-    const postData = {
-      rectype: "saving",
-      data: `[${formattedData}]`
-    };
+    const textContent = await sendRequestToGemini(formattedData);
 
-    // Log the postData before making the request
-    console.log("Post Data:", postData);
-
-    // Send POST request to the external backend
-    const response = await axios.post(
-      'https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend', 
-      postData
-    );
-
-    // Return the response from the external service
-    res.status(200).json(response.data);
+    // Step 4: Return the API response to the client
+    res.status(200).json({
+      formattedData: formattedData,
+      recommendations: textContent,
+    });
   } catch (error) {
-    console.error("Error getting recommendation:", error);
     res.status(500).json({ msg: "Server Error", error: error.message });
   }
 };
-

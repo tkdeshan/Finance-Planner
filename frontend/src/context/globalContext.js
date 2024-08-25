@@ -187,7 +187,7 @@ export const GlobalProvider = ({ children }) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    setExpenses(response.data);
+    setInvestments(response.data);
   };
 
   const deleteInvestment = async (id) => {
@@ -246,7 +246,7 @@ export const GlobalProvider = ({ children }) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    setIncomes(response.data);
+    setSavings(response.data);
   };
 
   const deleteSaving = async (id) => {

@@ -1,12 +1,15 @@
 const InvestmentSchema = require("../models/InvestmentModel");
-
-const axios = require('axios');
+const sendRequestToGemini = require("../gemini");
+const axios = require("axios");
 
 exports.addInvestment = async (req, res) => {
   const { title, amount, description, category, type, date } = req.body;
+  const userId = req.user._id;
 
   const saving = new InvestmentSchema({
+    userId,
     title,
+    type,
     amount,
     description,
     category,
@@ -30,8 +33,14 @@ exports.addInvestment = async (req, res) => {
 
 exports.getInvestments = async (req, res) => {
   try {
-    const investment = await InvestmentSchema.find();
-    res.status(200).json(investment);
+    const userId = req.user._id;
+    const investments = await InvestmentSchema.find({ userId });
+
+    if (investments.length === 0) {
+      return res.status(404).json({ msg: "No investments found" });
+    }
+
+    res.status(200).json(investments);
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
   }
@@ -49,7 +58,6 @@ exports.deleteInvestment = async (req, res) => {
 };
 
 exports.updateInvestment = async (req, res) => {
-  console.log("🚀 ~ exports.updateInvestment= ~ req:", req.body);
   const { id } = req.params;
   const updateData = req.body;
 
@@ -64,10 +72,6 @@ exports.updateInvestment = async (req, res) => {
       runValidators: true,
     });
 
-    if (!updatedInvestment) {
-      return res.status(404).json({ msg: "Investment not found" });
-    }
-
     return res.status(200).json({
       msg: "Investment updated successfully",
       investment: updatedInvestment,
@@ -76,9 +80,7 @@ exports.updateInvestment = async (req, res) => {
     console.error("Error updating investment:", err);
     // Handling specific Mongoose error codes here if needed
     if (err.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({ msg: "Validation Error", errors: err.errors });
+      return res.status(400).json({ msg: "Validation Error", errors: err.errors });
     }
     return res.status(500).json({ msg: "Server Error" });
   }
@@ -86,28 +88,23 @@ exports.updateInvestment = async (req, res) => {
 
 exports.getInvestmentRecommendation = async (req, res) => {
   try {
+    const { id } = req.params;
+
     // Step 1: Fetch all investments with category and amount
-    const investments = await InvestmentSchema.find().select('category amount');
+    const investment = await InvestmentSchema.findById(id).select("title category amount");
 
     // Step 2: Format the data as required by the external API
-    const formattedData = investments.map(investment => `('${investment.category}',${investment.amount})`).join(',');
-
-    const requestData = {
-      rectype: "invest",
-      data: `[${formattedData}]`
-    };
-
-    console.log("Post Data:", requestData);
+    const formattedData = `${investment.category} ${investment.title} ${investment.amount}LKR. Please give recommendations for valuble invesment.`;
 
     // Step 3: Send the data to the external API
-    const apiUrl = 'https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend';
-    const response = await axios.post(apiUrl, requestData);
+    const textContent = await sendRequestToGemini(formattedData);
 
     // Step 4: Return the API response to the client
-    res.status(200).json(response.data);
+    res.status(200).json({
+      formattedData: formattedData,
+      recommendations: textContent,
+    });
   } catch (error) {
-    console.error("Error fetching investment recommendation:", error.message);
     res.status(500).json({ msg: "Server Error" });
   }
 };
-
