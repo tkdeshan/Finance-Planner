@@ -21,7 +21,7 @@ export const GlobalProvider = ({ children }) => {
   const getUserDetails = async () => {
     try {
       const token = getToken();
-      const response = await axios.get(`${BASE_URL}/get-user-details`, {
+      const response = await axios.get(`${BASE_URL}/auth/get-user-details`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
