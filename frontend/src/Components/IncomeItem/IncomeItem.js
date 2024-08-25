@@ -36,6 +36,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
   const { updateIncome, setError, getIncomes } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState("");
+  const [request, setRequest] = useState("");
 
   const handleEdit = () => {
     setModalOpen(true);
@@ -76,8 +77,14 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
           },
         }
       );
-      setRecommendations(response.data);
-      if (response) {
+
+      if (response?.data) {
+        const formattedRecommendations = response.data.recommendations
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
+          .replace(/\*/g, "<br><br>"); // New line
+
+        setRequest(response.data.formattedData);
+        setRecommendations(formattedRecommendations);
         setChatOpen(!isChatOpen);
       }
     } catch (error) {
@@ -187,7 +194,14 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
-      {isChatOpen && <ChatBox isOpen={isChatOpen} recommendations={recommendations} onClose={() => setChatOpen(false)} />}
+      {isChatOpen && (
+        <ChatBox
+          isOpen={isChatOpen}
+          recommendations={recommendations}
+          request={request}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </>
   );
 }

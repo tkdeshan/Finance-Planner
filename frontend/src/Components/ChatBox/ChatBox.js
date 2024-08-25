@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Button from "../Button/Button";
 import { sendMessage, closeButton } from "../../utils/icons";
 
-const ChatBox = ({ isOpen, onClose, recommendations }) => {
+const ChatBox = ({ isOpen, onClose, recommendations, request }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -20,10 +20,17 @@ const ChatBox = ({ isOpen, onClose, recommendations }) => {
         <Overlay>
           <ChatBoxStyled>
             <div className="header">
-              <h4>Chat</h4>
+              <h4>Chat with Ai bot</h4>
               <Button icon={closeButton} onClick={onClose} />
             </div>
-            <div className="messages">{recommendations}</div>
+            <div className="chatbox-body">
+              {recommendations ? (
+                <div dangerouslySetInnerHTML={{ __html: recommendations }} />
+              ) : (
+                <p>No recommendations available.</p>
+              )}
+            </div>
+            <div>{request}</div>
             <div className="messages">
               {messages.map((msg, index) => (
                 <p key={index}>{msg}</p>
@@ -59,10 +66,10 @@ const Overlay = styled.div`
 `;
 
 const ChatBoxStyled = styled.div`
-  width: 500px;
+  width: 800px;
   max-height: 500px;
   overflow: auto;
-  background: #fff;
+  background: #f2eded;
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -77,12 +84,25 @@ const ChatBoxStyled = styled.div`
     align-items: center;
   }
 
+  .chatbox-body {
+    padding: 1rem;
+    margin: 1rem;
+    width: 70%;
+    border-radius: 10px;
+    background: #20b9e8;
+    border: 1px solid #4d4f4d;
+  }
+
   .messages {
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    overflow-y: auto;
-    border-bottom: 1px solid #ddd;
+    margin: 1rem;
+    width: 70%;
+    margin-left: auto;
+    border-radius: 10px;
+    background: #20e866;
+    border-bottom: 1px solid #4d4f4d;
   }
 
   .footer {

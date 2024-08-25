@@ -99,13 +99,16 @@ exports.getIncomeRecommendation = async (req, res) => {
     // Step 2: Format the data as required by the external API
     const formattedData =
       `${Income.category}','${Income.title}',${Income.amount}` +
-      "please give recommendations to increase this income.";
+      " please give recommendations to increase this income.";
 
     // Step 3: Send the data to the external API
     const textContent = await sendRequestToGemini(formattedData);
 
     // Step 4: Return the API response to the client
-    res.status(200).json(textContent);
+    res.status(200).json({
+      formattedData: formattedData,
+      recommendations: textContent,
+    });
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
   }
