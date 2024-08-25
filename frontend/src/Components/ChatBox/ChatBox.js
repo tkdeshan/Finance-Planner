@@ -115,7 +115,7 @@ const ChatBoxStyled = styled.div`
   width: 800px;
   max-height: 500px;
   overflow: auto;
-  background: #f2eded;
+  background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
@@ -126,7 +126,7 @@ const ChatBoxStyled = styled.div`
 
   .header {
     padding: 0.5rem;
-    background: #f5f5f5;
+    background: #e3bbf0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -147,15 +147,16 @@ const ChatBoxStyled = styled.div`
     .user-message {
       margin-left: auto;
       align-self: flex-end;
-      background: #20e866;
+      background: #e6e8e6;
       color: #000;
       text-align: right;
     }
 
     .bot-message {
       align-self: flex-start;
-      background: #20b9e8;
+      background: #e6e8e6;
       color: #fff;
+      color: #000;
     }
   }
 

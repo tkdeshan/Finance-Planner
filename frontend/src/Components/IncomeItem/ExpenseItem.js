@@ -163,9 +163,6 @@ function ExpenseItem({ id, title, amount, date, category, description, deleteIte
                   <p>
                     {calender} {dateFormat(date)}
                   </p>
-                  <p>
-                    {comment} {description}
-                  </p>
                 </div>
 
                 <div className="btn-con">
@@ -201,6 +198,7 @@ function ExpenseItem({ id, title, amount, date, category, description, deleteIte
                   />
                 </div>
               </div>
+              <p>{description}</p>
             </div>
           </>
         )}

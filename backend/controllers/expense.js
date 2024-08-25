@@ -98,7 +98,6 @@ exports.getExpenseRecommendation = async (req, res) => {
 
     // Step 3: Send the data to the external API
     const textContent = await sendRequestToGemini(formattedData);
-     console.log(textContent);
     // Step 4: Return the API response to the client
     res.status(200).json({
       formattedData: formattedData,
