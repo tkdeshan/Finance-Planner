@@ -97,9 +97,7 @@ exports.getIncomeRecommendation = async (req, res) => {
     const Income = await IncomeSchema.findById(id).select("title category amount");
 
     // Step 2: Format the data as required by the external API
-    const formattedData =
-      `${Income.category}','${Income.title}',${Income.amount}` +
-      " please give recommendations to increase this income.";
+    const formattedData = `${Income.category} ${Income.title} ${Income.amount}LKR. Please give recommendations to increase this income.`;
 
     // Step 3: Send the data to the external API
     const textContent = await sendRequestToGemini(formattedData);

@@ -2,15 +2,61 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Button from "../Button/Button";
 import { sendMessage, closeButton } from "../../utils/icons";
+import axios from "axios";
 
 const ChatBox = ({ isOpen, onClose, recommendations, request }) => {
-  const [messages, setMessages] = useState([]);
+  const [chatHistory, setChatHistory] = useState([
+    { sender: "user", message: request }, // As a user request message
+    { sender: "bot", message: recommendations }, // As a bot response
+  ]);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSendMessage = () => {
+  const sendRequestToGemini = async (prompt) => {
+    try {
+      const requestData = {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+      };
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyAdSwKohVCrS20S26iPNTtaUjllcU4j180`;
+      const response = await axios.post(apiUrl, requestData);
+
+      // Apply formatting to the AI response
+      const formattedRecommendations = response.data?.candidates[0].content.parts[0].text
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
+        .replace(/\*/g, "<br><br>"); // New line
+
+      return formattedRecommendations;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      setMessages([...messages, newMessage]);
+      // Add user message to chat history
+      const updatedHistory = [...chatHistory, { sender: "user", message: newMessage }];
+      setChatHistory(updatedHistory);
+
+      // Clear input field
       setNewMessage("");
+
+      try {
+        // Get AI response
+        const aiResponse = await sendRequestToGemini(updatedHistory.map((msg) => msg.message).join("\n"));
+
+        // Add AI response to chat history
+        setChatHistory([...updatedHistory, { sender: "bot", message: aiResponse }]);
+      } catch (error) {
+        // Handle error (e.g., show error message)
+        setChatHistory([...updatedHistory, { sender: "bot", message: "Error in AI response." }]);
+      }
     }
   };
 
@@ -20,20 +66,20 @@ const ChatBox = ({ isOpen, onClose, recommendations, request }) => {
         <Overlay>
           <ChatBoxStyled>
             <div className="header">
-              <h4>Chat with Ai bot</h4>
+              <h4>Chat with AI bot</h4>
               <Button icon={closeButton} onClick={onClose} />
             </div>
             <div className="chatbox-body">
-              {recommendations ? (
-                <div dangerouslySetInnerHTML={{ __html: recommendations }} />
-              ) : (
-                <p>No recommendations available.</p>
-              )}
-            </div>
-            <div>{request}</div>
-            <div className="messages">
-              {messages.map((msg, index) => (
-                <p key={index}>{msg}</p>
+              {chatHistory.map((chat, index) => (
+                <div
+                  key={index}
+                  className={`message ${chat.sender === "user" ? "user-message" : "bot-message"}`}>
+                  {chat.sender === "bot" ? (
+                    <div dangerouslySetInnerHTML={{ __html: chat.message }} />
+                  ) : (
+                    <p>{chat.message}</p>
+                  )}
+                </div>
               ))}
             </div>
             <div className="footer">
@@ -58,8 +104,8 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Dark background with opacity */
-  backdrop-filter: blur(5px); /* Optional: adds a blur effect */
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -85,24 +131,30 @@ const ChatBoxStyled = styled.div`
   }
 
   .chatbox-body {
+    flex-grow: 1;
     padding: 1rem;
-    margin: 1rem;
-    width: 70%;
-    border-radius: 10px;
-    background: #20b9e8;
-    border: 1px solid #4d4f4d;
-  }
+    overflow-y: auto;
 
-  .messages {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    margin: 1rem;
-    width: 70%;
-    margin-left: auto;
-    border-radius: 10px;
-    background: #20e866;
-    border-bottom: 1px solid #4d4f4d;
+    .message {
+      max-width: 70%;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 10px;
+    }
+
+    .user-message {
+      margin-left: auto;
+      align-self: flex-end;
+      background: #20e866;
+      color: #000;
+      text-align: right;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background: #20b9e8;
+      color: #fff;
+    }
   }
 
   .footer {
