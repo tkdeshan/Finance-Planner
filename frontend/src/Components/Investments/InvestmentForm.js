@@ -6,10 +6,10 @@ import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import { plus } from "../../utils/icons";
 import Popup from "../Popup/Popup";
-import axios from "axios";
+import Swal from "sweetalert2";
 
 function InvestmentForm() {
-  const { addInvestment, error, setError } = useGlobalContext();
+  const { addInvestment, getInvestments, error, setError } = useGlobalContext();
   const [inputState, setInputState] = useState({
     title: "",
     amount: "",
@@ -21,6 +21,7 @@ function InvestmentForm() {
   const [recommendations, setRecommendations] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { title, amount, date, category, description } = inputState;
+  const [isModalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleInput = (name) => (e) => {
@@ -28,9 +29,27 @@ function InvestmentForm() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addInvestment(inputState);
+    const result = await addInvestment(inputState);
+
+    if (result === "success") {
+      Swal.fire({
+        title: "Success!",
+        text: "Invesment created successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      handleClose();
+      getInvestments();
+    } else {
+      console.error("Failed to create item:");
+    }
+
     setInputState({
       title: "",
       amount: "",
@@ -38,19 +57,6 @@ function InvestmentForm() {
       category: "",
       description: "",
     });
-  };
-
-  const handleGetRecommendations = async () => {
-    setIsLoading(true); // Start loading
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/v1/get-invest-recommendation`);
-      setRecommendations(response.data); // Assuming the API returns a string
-      setIsPopupOpen(true); // Open the popup
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    } finally {
-      setIsLoading(false); // Stop loading
-    }
   };
 
   const handleClosePopup = () => {
@@ -63,6 +69,7 @@ function InvestmentForm() {
       <div className="input-control">
         <input
           type="text"
+          required
           value={title}
           name={"title"}
           placeholder="Investment Title"
@@ -72,7 +79,7 @@ function InvestmentForm() {
       <div className="input-control">
         <input
           value={amount}
-          type="text"
+          type="number"
           name={"amount"}
           placeholder={"Investment Amount"}
           onChange={handleInput("amount")}
@@ -81,6 +88,7 @@ function InvestmentForm() {
       <div className="input-control">
         <DatePicker
           id="date"
+          required
           placeholderText="Enter A Date"
           selected={date}
           dateFormat="dd/MM/yyyy"
@@ -90,7 +98,7 @@ function InvestmentForm() {
         />
       </div>
       <div className="selects input-control">
-        <select value={category} name="category" id="category" onChange={handleInput("category")}>
+        <select required value={category} name="category" id="category" onChange={handleInput("category")}>
           <option value="" disabled>
             Select Option
           </option>
@@ -106,6 +114,7 @@ function InvestmentForm() {
       </div>
       <div className="input-control">
         <textarea
+          required
           name="description"
           value={description}
           placeholder="Add A Reference"
@@ -122,18 +131,6 @@ function InvestmentForm() {
           bRad={"30px"}
           bg={"var(--color-accent"}
           color={"#fff"}
-        />
-      </div>
-      <div className="gpt-btn">
-        <Button
-          name={isLoading ? "Loading..." : "Generate Recommendations"} // Button text changes on loading
-          icon={isLoading ? null : plus} // Remove icon during loading
-          bPad={".8rem 1.6rem"}
-          bRad={"30px"}
-          bg={isLoading ? "#999" : "var(--color-accent"} // Button color changes during loading
-          color={"#fff"}
-          onClick={handleGetRecommendations}
-          disabled={isLoading || !category} // Disable button during loading or if no category is selected
         />
       </div>
 
