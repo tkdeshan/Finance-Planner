@@ -33,3 +33,5 @@ export const signup = <i className="fa-solid fa-user-plus"></i>;
 export const signin = <i className="fa-solid fa-sign-in-alt"></i>;
 export const edit = <i className="fa-solid fa-edit"></i>;
 export const chat = <i className="fa-solid fa-message"></i>;
+export const sendMessage = <i className="fa-solid fa-paper-plane"></i>; 
+export const closeButton = <i className="fa-solid fa-xmark"></i>;

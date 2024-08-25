@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { dateFormat } from "../../utils/dateFormat";
 import {
@@ -9,7 +9,6 @@ import {
   circle,
   clothing,
   comment,
-  LKR,
   food,
   freelance,
   medical,
@@ -28,17 +27,21 @@ import EditModal from "../UpdateIncome/updateIncome";
 import Button from "../Button/Button";
 import { useGlobalContext } from "../../context/globalContext";
 import Swal from "sweetalert2";
+import ChatBox from "../ChatBox/ChatBox"; // Import the ChatBox component
 
 function IncomeItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isChatOpen, setChatOpen] = useState(false); // State to control chat box visibility
   const { updateIncome, setError, getIncomes } = useGlobalContext();
 
   const handleEdit = () => {
     setModalOpen(true);
   };
+
   const handleClose = () => {
     setModalOpen(false);
   };
+
   const handleUpdate = async (updatedItem) => {
     const result = await updateIncome(updatedItem).catch((err) => {
       console.error("Update failed:", err);
@@ -105,55 +108,8 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
     }
   };
 
-  const savingsCatIcon = () => {
-    switch (category) {
-      case "education":
-        return book;
-      case "groceries":
-        return food;
-      case "health":
-        return medical;
-      case "subscriptions":
-        return tv;
-      case "takeaways":
-        return takeaway;
-      case "clothing":
-        return clothing;
-      case "travelling":
-        return freelance;
-      case "other":
-        return circle;
-      default:
-        return "";
-    }
-  };
-
-  const investmentCatIcon = () => {
-    switch (category) {
-      case "education":
-        return book;
-      case "groceries":
-        return food;
-      case "health":
-        return medical;
-      case "subscriptions":
-        return tv;
-      case "takeaways":
-        return takeaway;
-      case "clothing":
-        return clothing;
-      case "travelling":
-        return freelance;
-      case "other":
-        return circle;
-      default:
-        return "";
-    }
-  };
-
   return (
     <>
-      {" "}
       <IncomeItemStyled indicator={indicatorColor}>
         <div className="icon">{type === "expense" ? expenseCatIcon() : categoryIcon()}</div>
         <div className="content">
@@ -195,6 +151,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
                 color={"#fff"}
                 iColor={"#fff"}
                 hColor={"var(--color-green)"}
+                onClick={() => setChatOpen(!isChatOpen)} // Toggle chat box visibility
               />
             </div>
           </div>
@@ -207,6 +164,8 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
+      {/* Render ChatBox conditionally based on isChatOpen */}
+      {isChatOpen && <ChatBox isOpen={isChatOpen} onClose={() => setChatOpen(false)} />}
     </>
   );
 }
