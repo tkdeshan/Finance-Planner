@@ -91,19 +91,25 @@ function EditModal({ isOpen, onClose, item, onUpdate }) {
       <div className="modal-content">
         <div className="input-group">
           <label>Title</label>
-          <input type="text" name="title" value={editedItem.title || ""} onChange={handleChange} />
+          <input required type="text" name="title" value={editedItem.title || ""} onChange={handleChange} />
         </div>
         <div className="input-group">
           <label>Amount</label>
-          <input type="text" name="amount" value={editedItem.amount || ""} onChange={handleChange} />
+          <input required type="number" name="amount" value={editedItem.amount || ""} onChange={handleChange} />
         </div>
         <div className="input-group">
           <label>Description</label>
-          <textarea name="description" value={editedItem.description || ""} onChange={handleChange} />
+          <textarea
+            required
+            name="description"
+            value={editedItem.description || ""}
+            onChange={handleChange}
+          />
         </div>
         <div className="input-group">
           <label>Date</label>
           <DatePicker
+            required
             selected={editedItem.date ? new Date(editedItem.date) : null}
             onChange={handleDateChange}
             dateFormat="dd/MM/yyyy"
@@ -112,7 +118,7 @@ function EditModal({ isOpen, onClose, item, onUpdate }) {
         </div>
         <div className="selects input-group">
           <label>Category</label>
-          <select name="category" value={editedItem.category || ""} onChange={handleSelectChange}>
+          <select required name="category" value={editedItem.category || ""} onChange={handleSelectChange}>
             <option value="" disabled>
               Select Category
             </option>
