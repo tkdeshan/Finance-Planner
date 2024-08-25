@@ -35,9 +35,6 @@ exports.getIncomes = async (req, res) => {
   try {
     const userId = req.user._id;
     const incomes = await IncomeSchema.find({ userId });
-    if (incomes.length === 0) {
-      return res.status(404).json({ msg: "No incomes found" });
-    }
 
     res.status(200).json(incomes);
   } catch (error) {

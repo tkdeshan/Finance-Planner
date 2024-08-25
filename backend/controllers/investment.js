@@ -36,10 +36,6 @@ exports.getInvestments = async (req, res) => {
     const userId = req.user._id;
     const investments = await InvestmentSchema.find({ userId });
 
-    if (investments.length === 0) {
-      return res.status(404).json({ msg: "No investments found" });
-    }
-
     res.status(200).json(investments);
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
