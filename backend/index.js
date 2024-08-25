@@ -3,7 +3,8 @@ const cors = require("cors");
 const { db } = require("./db/db");
 const { readdirSync } = require("fs");
 const app = express();
-const authRoutes = require('./routes/auth');
+const authRoutes = require("./routes/auth");
+const transactionRoutes = require("./routes/transactions");
 
 require("dotenv").config();
 
@@ -14,12 +15,8 @@ app.use(express.json());
 app.use(cors());
 
 //routes
-readdirSync("./routes").map((route) =>
-  app.use("/api/v1", require("./routes/" + route))
-);
-
-// Auth routes
-app.use('/api/v1/auth', authRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1", transactionRoutes);
 
 const server = () => {
   db();
@@ -28,8 +25,8 @@ const server = () => {
   });
 };
 
-app.get("/",(req,res)=> {
+app.get("/", (req, res) => {
   res.json("hello");
-})
+});
 
 server();
