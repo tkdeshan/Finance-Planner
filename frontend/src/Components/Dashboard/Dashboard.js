@@ -21,6 +21,7 @@ function Dashboard() {
     getExpenses,
     getInvestments,
     getSavings,
+    getUserDetails,
   } = useGlobalContext();
 
   useEffect(() => {
@@ -28,6 +29,7 @@ function Dashboard() {
     getExpenses();
     getInvestments();
     getSavings();
+    getUserDetails();
   }, []);
 
   return (

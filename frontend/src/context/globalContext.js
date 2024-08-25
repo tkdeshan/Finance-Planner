@@ -11,8 +11,27 @@ export const GlobalProvider = ({ children }) => {
   const [investments, setInvestments] = useState([]);
   const [savings, setSavings] = useState([]);
   const [error, setError] = useState(null);
-
+  const [userDetails, setUserDetails] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Function to get JWT token from local storage
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
+  const getUserDetails = async () => {
+    try {
+      const token = getToken();
+      const response = await axios.get(`${BASE_URL}/get-user-details`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserDetails(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Error fetching user details");
+    }
+  };
 
   //calculate incomes
   const addIncome = async (income) => {
@@ -59,15 +78,13 @@ export const GlobalProvider = ({ children }) => {
     getExpenses();
   };
 
-   const updateExpense = async (expense) => {
-     const response = await axios
-       .put(`${BASE_URL}/update-expense/${expense.id}`, expense)
-       .catch((err) => {
-         setError(err.response.data.message);
-         console.log("🚀 ~ updateExpense ~ response:", response);
-       });
-     return "success";
-   };
+  const updateExpense = async (expense) => {
+    const response = await axios.put(`${BASE_URL}/update-expense/${expense.id}`, expense).catch((err) => {
+      setError(err.response.data.message);
+      console.log("🚀 ~ updateExpense ~ response:", response);
+    });
+    return "success";
+  };
 
   const getExpenses = async () => {
     const response = await axios.get(`${BASE_URL}/get-expenses`);
@@ -97,15 +114,15 @@ export const GlobalProvider = ({ children }) => {
     getInvestments();
   };
 
-   const updateInvestment = async (investment) => {
-     const response = await axios
-       .put(`${BASE_URL}/update-investment/${investment.id}`, investment)
-       .catch((err) => {
-         setError(err.response.data.message);
-         console.log("🚀 ~ updateInvestment ~ response:", response);
-       });
-     return "success";
-   };
+  const updateInvestment = async (investment) => {
+    const response = await axios
+      .put(`${BASE_URL}/update-investment/${investment.id}`, investment)
+      .catch((err) => {
+        setError(err.response.data.message);
+        console.log("🚀 ~ updateInvestment ~ response:", response);
+      });
+    return "success";
+  };
 
   const getInvestments = async () => {
     const response = await axios.get(`${BASE_URL}/get-investments`);
@@ -135,15 +152,13 @@ export const GlobalProvider = ({ children }) => {
     getSavings();
   };
 
-   const updateSaving = async (saving) => {
-     const response = await axios
-       .put(`${BASE_URL}/update-saving/${saving.id}`, saving)
-       .catch((err) => {
-         setError(err.response.data.message);
-         console.log("🚀 ~ updateSaving ~ response:", response);
-       });
-     return "success";
-   };
+  const updateSaving = async (saving) => {
+    const response = await axios.put(`${BASE_URL}/update-saving/${saving.id}`, saving).catch((err) => {
+      setError(err.response.data.message);
+      console.log("🚀 ~ updateSaving ~ response:", response);
+    });
+    return "success";
+  };
 
   const getSavings = async () => {
     const response = await axios.get(`${BASE_URL}/get-savings`);
@@ -207,12 +222,13 @@ export const GlobalProvider = ({ children }) => {
         savings,
         totalBalance,
         transactionHistory,
+        getUserDetails,
+        userDetails,
         error,
         setError,
         isAuthenticated,
         setIsAuthenticated,
-      }}
-    >
+      }}>
       {children}
     </GlobalContext.Provider>
   );

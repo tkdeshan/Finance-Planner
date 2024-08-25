@@ -1,6 +1,5 @@
-const { User, validate } = require('../models/user');
-const bcrypt = require('bcryptjs');
-
+const { User, validate } = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -8,17 +7,17 @@ exports.registerUser = async (req, res) => {
     if (error) return res.status(400).send({ message: error.details[0].message });
 
     const user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(409).send({ message: 'User with given email already exists!' });
+    if (user) return res.status(409).send({ message: "User with given email already exists!" });
 
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bcrypt.hash(req.body.password, salt);
 
     const newUser = new User({ ...req.body, password: hashPassword });
     await newUser.save();
-    res.status(201).send({ message: 'User created successfully' });
+    res.status(201).send({ message: "User created successfully" });
   } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).send({ message: 'Internal Server Error' });
+    console.error("Error registering user:", error);
+    res.status(500).send({ message: "Internal Server Error" });
   }
 };
 
@@ -28,15 +27,27 @@ exports.loginUser = async (req, res) => {
     if (error) return res.status(400).send({ message: error.details[0].message });
 
     const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(401).send({ message: 'Invalid Email or Password' });
+    if (!user) return res.status(401).send({ message: "Invalid Email or Password" });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) return res.status(401).send({ message: 'Invalid Email or Password' });
+    if (!validPassword) return res.status(401).send({ message: "Invalid Email or Password" });
 
     const token = user.generateAuthToken();
-    res.status(200).send({ data: token, message: 'logged in successfully' });
+    res.status(200).send({ data: token, message: "logged in successfully" });
   } catch (error) {
-    console.error('Error logging in user:', error);
-    res.status(500).send({ message: 'Internal Server Error' });
+    console.error("Error logging in user:", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password"); // Exclude password field
+    if (!user) return res.status(404).send({ message: "User not found" });
+
+    res.status(200).send(user);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).send({ message: "Internal Server Error" });
   }
 };
