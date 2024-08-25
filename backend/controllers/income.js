@@ -57,7 +57,6 @@ exports.deleteIncome = async (req, res) => {
 };
 
 exports.updateIncome = async (req, res) => {
-  console.log("🚀 ~ exports.updateIncome= ~ req:", req.body);
   const { id } = req.params;
   const updateData = req.body;
 

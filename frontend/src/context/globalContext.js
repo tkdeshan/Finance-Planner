@@ -91,30 +91,53 @@ export const GlobalProvider = ({ children }) => {
     return totalIncome;
   };
 
-  //calculate expenses
   const addExpense = async (expense) => {
-    const response = await axios.post(`${BASE_URL}/add-expense`, expense).catch((err) => {
-      setError(err.response.data.message);
-    });
-    getExpenses();
+    const token = getToken();
+
+    try {
+      await axios.post(`${BASE_URL}/add-expense`, expense, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return "success";
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred while adding income");
+    }
   };
 
   const updateExpense = async (expense) => {
-    const response = await axios.put(`${BASE_URL}/update-expense/${expense.id}`, expense).catch((err) => {
-      setError(err.response.data.message);
-      console.log("🚀 ~ updateExpense ~ response:", response);
-    });
+    const token = getToken();
+    await axios
+      .put(`${BASE_URL}/update-expense/${expense.id}`, expense, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
     return "success";
   };
 
   const getExpenses = async () => {
-    const response = await axios.get(`${BASE_URL}/get-expenses`);
+    const token = getToken();
+    const response = await axios.get(`${BASE_URL}/get-expenses`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setExpenses(response.data);
-    console.log(response.data);
   };
 
   const deleteExpense = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/delete-expense/${id}`);
+    const token = getToken();
+    await axios.delete(`${BASE_URL}/delete-expense/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     getExpenses();
   };
 

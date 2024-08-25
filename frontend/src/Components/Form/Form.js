@@ -30,19 +30,6 @@ function Form() {
     setError("");
   };
 
-  const handleGetRecommendations = async () => {
-    setIsLoading(true); // Start loading
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/v1/get-income-recommendation`);
-      setRecommendations(response.data);
-      setIsPopupOpen(true);
-    } catch (error) {
-      console.error("Error fetching recommendations:", error);
-    } finally {
-      setIsLoading(false); // Stop loading
-    }
-  };
-
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
@@ -61,7 +48,7 @@ function Form() {
         text: "Income created successfully",
         icon: "success",
         confirmButtonText: "OK",
-      })
+      });
       handleClose();
       getIncomes();
     } else {

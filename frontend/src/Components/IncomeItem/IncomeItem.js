@@ -49,7 +49,6 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
 
   const handleUpdate = async (updatedItem) => {
     const result = await updateIncome(updatedItem).catch((err) => {
-      console.error("Update failed:", err);
       setError(err.response?.data.message || "Failed to update income.");
     });
 

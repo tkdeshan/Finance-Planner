@@ -1,12 +1,13 @@
 const ExpenseSchema = require("../models/ExpenseModel");
-
-const axios = require('axios');
+const sendRequestToGemini = require("../gemini");
+const axios = require("axios");
 
 exports.addExpense = async (req, res) => {
-  console.log(req.body);
   const { title, amount, description, category, type, date } = req.body;
+  const userId = req.user._id;
 
   const expense = new ExpenseSchema({
+    userId,
     title,
     type,
     amount,
@@ -32,7 +33,8 @@ exports.addExpense = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   try {
-    const expenses = await ExpenseSchema.find();
+    const userId = req.user._id;
+    const expenses = await ExpenseSchema.find({ userId });
     res.status(200).json(expenses);
   } catch (error) {
     res.status(500).json({ msg: "Server Error" });
@@ -78,38 +80,31 @@ exports.updateExpense = async (req, res) => {
     console.error("Error updating expense:", err);
     // Handling specific Mongoose error codes here if needed
     if (err.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({ msg: "Validation Error", errors: err.errors });
+      return res.status(400).json({ msg: "Validation Error", errors: err.errors });
     }
     return res.status(500).json({ msg: "Server Error" });
   }
 };
 
-
 exports.getExpenseRecommendation = async (req, res) => {
   try {
+    const { id } = req.params;
+
     // Step 1: Fetch all investments with category and amount
-    const Expenses = await ExpenseSchema.find().select('category amount');
+    const Expense = await ExpenseSchema.findById(id).select("title category amount");
 
     // Step 2: Format the data as required by the external API
-    const formattedData = Expenses.map(Expense => `('${Expense.category}',${Expense.amount})`).join(',');
-
-    const requestData = {
-      rectype: "expense",
-      data: `[${formattedData}]`
-    };
-    console.log("Post Data:", requestData);
-    
+    const formattedData = `${Expense.category} ${Expense.title} ${Expense.amount}LKR. Please give recommendations to reduce this expence.`;
 
     // Step 3: Send the data to the external API
-    const apiUrl = 'https://us-central1-single-scholar-431016-j9.cloudfunctions.net/GPT_Backend';
-    const response = await axios.post(apiUrl, requestData);
-
+    const textContent = await sendRequestToGemini(formattedData);
+     console.log(textContent);
     // Step 4: Return the API response to the client
-    res.status(200).json(response.data);
+    res.status(200).json({
+      formattedData: formattedData,
+      recommendations: textContent,
+    });
   } catch (error) {
-    console.error("Error fetching investment recommendation:", error.message);
     res.status(500).json({ msg: "Server Error" });
   }
 };

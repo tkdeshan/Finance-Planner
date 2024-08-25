@@ -37,31 +37,24 @@ router.put("/update-income/:id", verifyToken, updateIncome);
 router.get("/get-income-recommendation/:id", verifyToken, getIncomeRecommendation);
 
 //Expense Routes
-router.post("/add-expense", addExpense);
-router.get("/get-expenses", getExpenses);
-router.delete("/delete-expense/:id", deleteExpense);
-router.put("/update-expense/:id", updateExpense);
-router.get("/get-expense-recommendation", getExpenseRecommendation);
+router.post("/add-expense", verifyToken, addExpense);
+router.get("/get-expenses", verifyToken, getExpenses);
+router.delete("/delete-expense/:id", verifyToken, deleteExpense);
+router.put("/update-expense/:id", verifyToken, updateExpense);
+router.get("/get-expense-recommendation/:id", verifyToken, getExpenseRecommendation);
 
 //Saving Routes
-router.post("/add-saving", addSaving);
-router.get("/get-savings", getSavings);
-router.delete("/delete-saving/:id", deleteSaving);
-router.put("/update-saving/:id", updateSaving);
-router.get("/get-recommendation", getRecommendation);
+router.post("/add-saving", verifyToken, addSaving);
+router.get("/get-savings", verifyToken, getSavings);
+router.delete("/delete-saving/:id", verifyToken, deleteSaving);
+router.put("/update-saving/:id", verifyToken, updateSaving);
+router.get("/get-recommendation/:id", verifyToken, getRecommendation);
 
 //Investment Routes
-router.post("/add-investment", addInvestment);
-router.get("/get-investments", getInvestments);
-router.delete("/delete-investment/:id", deleteInvestment);
-router.put("/update-investment/:id", updateInvestment);
-router.get("/get-invest-recommendation", getInvestmentRecommendation);
-
-//GPT Recommendation
-// router.post("/recommendation", async (req, res) => {
-//   const { category, amount } = req.body;
-//     const recommendation = await getRecommendation(category, amount);
-//     res.json(recommendation);
-// });
+router.post("/add-investment", verifyToken, addInvestment);
+router.get("/get-investments", verifyToken, getInvestments);
+router.delete("/delete-investment/:id", verifyToken, deleteInvestment);
+router.put("/update-investment/:id", verifyToken, updateInvestment);
+router.get("/get-invest-recommendation/:id", verifyToken, getInvestmentRecommendation);
 
 module.exports = router;

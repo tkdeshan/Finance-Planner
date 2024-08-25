@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { dateFormat } from "../../utils/dateFormat";
 import {
@@ -9,7 +9,6 @@ import {
   circle,
   clothing,
   comment,
-  LKR,
   food,
   freelance,
   medical,
@@ -22,35 +21,34 @@ import {
   tv,
   users,
   yt,
+  chat,
 } from "../../utils/icons";
 import EditModal from "../UpdateIncome/updateIncome";
 import Button from "../Button/Button";
 import { useGlobalContext } from "../../context/globalContext";
 import Swal from "sweetalert2";
+import ChatBox from "../ChatBox/ChatBox";
+import axios from "axios";
+import Loader from "../Loader/Loader";
 
-function ExpenseItem({
-  id,
-  title,
-  amount,
-  date,
-  category,
-  description,
-  deleteItem,
-  indicatorColor,
-  type,
-}) {
+function ExpenseItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
   const [isModalOpen, setModalOpen] = useState(false);
-  const { updateExpense, setError } = useGlobalContext();
+  const [isChatOpen, setChatOpen] = useState(false);
+  const { updateExpense, setError, getExpenses } = useGlobalContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState("");
+  const [request, setRequest] = useState("");
 
   const handleEdit = () => {
     setModalOpen(true);
   };
+
   const handleClose = () => {
     setModalOpen(false);
   };
+
   const handleUpdate = async (updatedItem) => {
     const result = await updateExpense(updatedItem).catch((err) => {
-      console.error("Update failed:", err);
       setError(err.response?.data.message || "Failed to update expense.");
     });
 
@@ -60,14 +58,40 @@ function ExpenseItem({
         text: "Expense updated successfully",
         icon: "success",
         confirmButtonText: "OK",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload(); // Refresh the page after clicking OK
-        }
       });
       handleClose();
+      getExpenses(); // Refresh expenses
     } else {
       console.error("Failed to update item:", updatedItem);
+    }
+  };
+
+  const handleGetRecommendations = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/get-expense-recommendation/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response?.data) {
+        const formattedRecommendations = response.data.recommendations
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold text
+          .replace(/\*/g, "<br><br>"); // New line
+
+        setRequest(response.data.formattedData);
+        setRecommendations(formattedRecommendations);
+        setChatOpen(!isChatOpen);
+      }
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -117,108 +141,78 @@ function ExpenseItem({
     }
   };
 
-  const savingsCatIcon = () => {
-    switch (category) {
-      case "education":
-        return book;
-      case "groceries":
-        return food;
-      case "health":
-        return medical;
-      case "subscriptions":
-        return tv;
-      case "takeaways":
-        return takeaway;
-      case "clothing":
-        return clothing;
-      case "travelling":
-        return freelance;
-      case "other":
-        return circle;
-      default:
-        return "";
-    }
-  };
-
-  const investmentCatIcon = () => {
-    switch (category) {
-      case "education":
-        return book;
-      case "groceries":
-        return food;
-      case "health":
-        return medical;
-      case "subscriptions":
-        return tv;
-      case "takeaways":
-        return takeaway;
-      case "clothing":
-        return clothing;
-      case "travelling":
-        return freelance;
-      case "other":
-        return circle;
-      default:
-        return "";
-    }
-  };
-
-  console.log("type", type);
-
   return (
     <>
-      {" "}
-      <ExpenseItemStyled indicator={indicatorColor}>
-        <div className="icon">
-          {type === "expense" ? expenseCatIcon() : categoryIcon()}
-        </div>
-        <div className="content">
-          <h5>{title}</h5>
-          <div className="inner-content">
-            <div className="text">
-              <p>
-                LKR {amount}
-              </p>
-              <p>
-                {calender} {dateFormat(date)}
-              </p>
-              <p>
-                {comment}
-                {description}
-              </p>
-            </div>
-
-            <div className="btn-con">
-              <Button
-                icon={edit}
-                bPad={"1rem"}
-                bRad={"50%"}
-                bg={"var(--primary-color)"}
-                color={"#fff"}
-                iColor={"#fff"}
-                hColor={"var(--color-green)"}
-                onClick={handleEdit}
-              />
-              <Button
-                icon={trash}
-                bPad={"1rem"}
-                bRad={"50%"}
-                bg={"var(--primary-color)"}
-                color={"#fff"}
-                iColor={"#fff"}
-                hColor={"var(--color-green)"}
-                onClick={() => deleteItem(id)}
-              />
-            </div>
-          </div>
-        </div>
-      </ExpenseItemStyled>
       <EditModal
         isOpen={isModalOpen}
         onClose={handleClose}
         item={{ id, title, amount, date, category, description }}
         onUpdate={handleUpdate}
       />
+      <ExpenseItemStyled indicator={indicatorColor}>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <div className="icon">{type === "expense" ? expenseCatIcon() : categoryIcon()}</div>
+            <div className="content">
+              <h5>{title}</h5>
+              <div className="inner-content">
+                <div className="text">
+                  <p>LKR {amount}</p>
+                  <p>
+                    {calender} {dateFormat(date)}
+                  </p>
+                  <p>
+                    {comment} {description}
+                  </p>
+                </div>
+
+                <div className="btn-con">
+                  <Button
+                    icon={edit}
+                    bPad={"0.6rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={handleEdit}
+                  />
+                  <Button
+                    icon={trash}
+                    bPad={"0.6rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={() => deleteItem(id)}
+                  />
+                  <Button
+                    icon={chat}
+                    bPad={"0.6rem"}
+                    bRad={"50%"}
+                    bg={"var(--primary-color)"}
+                    color={"#fff"}
+                    iColor={"#fff"}
+                    hColor={"var(--color-green)"}
+                    onClick={handleGetRecommendations}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </ExpenseItemStyled>
+      {isChatOpen && (
+        <ChatBox
+          isOpen={isChatOpen}
+          recommendations={recommendations}
+          request={request}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </>
   );
 }
