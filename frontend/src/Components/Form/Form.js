@@ -6,7 +6,6 @@ import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import { plus } from "../../utils/icons";
 import Popup from "../Popup/Popup";
-import axios from "axios";
 import Swal from "sweetalert2";
 
 function Form() {

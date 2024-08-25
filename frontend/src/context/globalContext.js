@@ -150,32 +150,53 @@ export const GlobalProvider = ({ children }) => {
     return totalExpenses;
   };
 
-  //calculate investments
   const addInvestment = async (investment) => {
-    const response = await axios.post(`${BASE_URL}/add-investment`, investment).catch((err) => {
-      setError(err.response.data.message);
-    });
-    getInvestments();
+    const token = getToken();
+
+    try {
+      await axios.post(`${BASE_URL}/add-investment`, investment, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return "success";
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred while adding investment");
+    }
   };
 
   const updateInvestment = async (investment) => {
-    const response = await axios
-      .put(`${BASE_URL}/update-investment/${investment.id}`, investment)
+    const token = getToken();
+    await axios
+      .put(`${BASE_URL}/update-investment/${investment.id}`, investment, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .catch((err) => {
         setError(err.response.data.message);
-        console.log("🚀 ~ updateInvestment ~ response:", response);
       });
     return "success";
   };
 
   const getInvestments = async () => {
-    const response = await axios.get(`${BASE_URL}/get-investments`);
-    setInvestments(response.data);
-    console.log(response.data);
+    const token = getToken();
+    const response = await axios.get(`${BASE_URL}/get-investments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setExpenses(response.data);
   };
 
   const deleteInvestment = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/delete-investment/${id}`);
+    const token = getToken();
+    await axios.delete(`${BASE_URL}/delete-investment/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     getInvestments();
   };
 
@@ -188,30 +209,53 @@ export const GlobalProvider = ({ children }) => {
     return totalInvestments;
   };
 
-  //calculate savings
   const addSaving = async (saving) => {
-    const response = await axios.post(`${BASE_URL}/add-saving`, saving).catch((err) => {
-      setError(err.response.data.message);
-    });
-    getSavings();
+    const token = getToken();
+
+    try {
+      await axios.post(`${BASE_URL}/add-saving`, saving, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return "success";
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred while adding saving");
+    }
   };
 
   const updateSaving = async (saving) => {
-    const response = await axios.put(`${BASE_URL}/update-saving/${saving.id}`, saving).catch((err) => {
-      setError(err.response.data.message);
-      console.log("🚀 ~ updateSaving ~ response:", response);
-    });
+    const token = getToken();
+    await axios
+      .put(`${BASE_URL}/update-saving/${saving.id}`, saving, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
     return "success";
   };
 
   const getSavings = async () => {
-    const response = await axios.get(`${BASE_URL}/get-savings`);
-    setSavings(response.data);
-    console.log(response.data);
+    const token = getToken();
+    const response = await axios.get(`${BASE_URL}/get-savings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setIncomes(response.data);
   };
 
   const deleteSaving = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/delete-saving/${id}`);
+    const token = getToken();
+    await axios.delete(`${BASE_URL}/delete-saving/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     getSavings();
   };
 

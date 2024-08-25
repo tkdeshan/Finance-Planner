@@ -66,7 +66,7 @@ const ChatBox = ({ isOpen, onClose, recommendations, request }) => {
         <Overlay>
           <ChatBoxStyled>
             <div className="header">
-              <h4>Chat with AI bot</h4>
+              <h4>Chat with OpenAI</h4>
               <Button icon={closeButton} onClick={onClose} />
             </div>
             <div className="chatbox-body">
