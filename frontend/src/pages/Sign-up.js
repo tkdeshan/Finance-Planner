@@ -238,6 +238,7 @@ const SignUp = () => {
             />
             <InputContainer>
               <Input
+                required
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 name="password"
