@@ -67,7 +67,7 @@ function InvestmentItem({
           icon: "success",
           confirmButtonText: "OK",
         });
-        
+
         handleClose();
         getInvestments();
       }
@@ -211,10 +211,11 @@ function InvestmentItem({
         {isLoading ? (
           <Loader />
         ) : (
-          <>
+          <div className="full-content">
             <div className="icon">{type === "investment" ? investmentCatIcon() : categoryIcon()}</div>
             <div className="content">
               <h5>{title}</h5>
+              <p>{description}</p>
               <div className="inner-content">
                 <div className="text">
                   <p>LKR {amount}</p>
@@ -255,9 +256,8 @@ function InvestmentItem({
                   />
                 </div>
               </div>
-              <p>{description}</p>
             </div>
-          </>
+          </div>
         )}
       </InvestmentItemStyled>
       {isChatOpen && (
@@ -285,6 +285,13 @@ const InvestmentItemStyled = styled.div`
   width: 100%;
   color: #222260;
 
+  .full-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+  }
+
   .icon {
     width: 80px;
     height: 80px;
@@ -304,7 +311,6 @@ const InvestmentItemStyled = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
-
     h5 {
       font-size: 1.3rem;
       padding-left: 2rem;
@@ -324,16 +330,14 @@ const InvestmentItemStyled = styled.div`
 
     .btn-con {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 1rem;
     }
 
     .inner-content {
       display: flex;
+      gap: 10px;
       justify-content: space-between;
-      align-items: center;
-
       .text {
         display: flex;
         align-items: center;
@@ -345,6 +349,29 @@ const InvestmentItemStyled = styled.div`
           color: var(--primary-color);
           opacity: 0.8;
         }
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.5rem;
+
+    .full-content {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .inner-content {
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+
+      i {
+        font-size: 2rem;
       }
     }
   }

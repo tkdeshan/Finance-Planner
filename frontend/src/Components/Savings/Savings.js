@@ -18,7 +18,8 @@ function Savings() {
       <InnerLayout>
         <h1>Savings</h1>
         <h2 className="total-income">
-          Total Saving: <span>LKR{totalSavings()}</span>
+          <span>Total Saving: </span>
+          <span className="amount">LKR{totalSavings()}</span>
         </h2>
         <div className="income-content">
           <div className="form-container">
@@ -26,8 +27,7 @@ function Savings() {
           </div>
           <div className="incomes">
             {savings.map((income) => {
-              const { _id, title, amount, date, category, description, type } =
-                income;
+              const { _id, title, amount, date, category, description, type } = income;
               console.log(income);
               return (
                 <SavingItem
@@ -66,7 +66,7 @@ const SavingStyled = styled.div`
     margin: 1rem 0;
     font-size: 2rem;
     gap: 0.5rem;
-    span {
+    .amount {
       font-size: 2.5rem;
       font-weight: 800;
       color: var(--color-green);
@@ -77,6 +77,27 @@ const SavingStyled = styled.div`
     gap: 2rem;
     .incomes {
       flex: 1;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+    }
+    .income-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+      .amount {
+        font-size: 1.5rem;
+      }
     }
   }
 `;

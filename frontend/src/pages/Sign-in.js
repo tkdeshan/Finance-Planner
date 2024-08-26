@@ -2,123 +2,183 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import styled from "styled-components";
 
-const styles = {
-  loginContainer: {
-    width: "100%",
-    minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loginFormContainer: {
-    width: "900px",
-    height: "500px",
-    display: "flex",
-    borderRadius: "10px",
-    boxShadow:
-      "0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%)",
-  },
-  left: {
-    flex: 2,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    borderTopLeftRadius: "10px",
-    borderBottomLeftRadius: "10px",
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  formContainerH1: {
-    fontSize: "40px",
-    marginTop: 0,
-  },
-  inputContainer: {
-    position: "relative",
-    width: "100%",
-    margin: "10px 0",
-  },
-  input: {
-    outline: "none",
-    border: "none",
-    width: "100%",
-    padding: "15px",
-    borderRadius: "10px",
-    backgroundColor: "#edf5f3",
-    fontSize: "14px",
-  },
-  eyeIcon: {
-    position: "absolute",
-    top: "50%",
-    right: "10px",
-    transform: "translateY(-50%)",
-    cursor: "pointer",
-  },
-  checkboxContainer: {
-    display: "flex",
-    alignItems: "center",
-    margin: "10px 0",
-  },
-  checkbox: {
-    marginRight: "10px",
-  },
-  errorMsg: {
-    width: "370px",
-    padding: "15px",
-    margin: "5px 0",
-    fontSize: "14px",
-    backgroundColor: "#f34646",
-    color: "white",
-    borderRadius: "5px",
-    textAlign: "center",
-  },
-  right: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FF69B4",
-    borderTopRightRadius: "10px",
-    borderBottomRightRadius: "10px",
-  },
-  rightH1: {
-    marginTop: 0,
-    color: "white",
-    fontSize: "40px",
-    alignSelf: "center",
-  },
-  whiteBtn: {
-    border: "none",
-    outline: "none",
-    padding: "12px 0",
-    backgroundColor: "white",
-    borderRadius: "20px",
-    width: "180px",
-    fontWeight: "bold",
-    fontSize: "14px",
-    cursor: "pointer",
-  },
-  greenBtn: {
-    border: "none",
-    outline: "none",
-    padding: "12px 0",
-    backgroundColor: "#FF69B4",
-    color: "white",
-    borderRadius: "20px",
-    width: "180px",
-    fontWeight: "bold",
-    fontSize: "14px",
-    cursor: "pointer",
-    margin: "10px",
-  },
-};
+const LoginContainer = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
+const LoginFormContainer = styled.div`
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  max-height: 500px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%),
+    0px 1px 8px 0px rgb(0 0 0 / 12%);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const Left = styled.div`
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0;
+  }
+`;
+
+const FormContainer = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 50px;
+
+  @media (max-width: 768px) {
+    padding: 0px;
+    max-width: 350px;
+  }
+`;
+
+const FormContainerH1 = styled.h1`
+  font-size: 32px;
+  margin-top: 0;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+`;
+
+const InputContainer = styled.div`
+  position: relative;
+  width: 100%;
+  margin: 10px 0;
+`;
+
+const Input = styled.input`
+  outline: none;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background-color: #edf5f3;
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    font-size: 12px;
+  }
+`;
+
+const EyeIcon = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+`;
+
+const Checkbox = styled.input`
+  margin-right: 10px;
+`;
+
+const ErrorMsg = styled.div`
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0;
+  font-size: 14px;
+  background-color: #f34646;
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+`;
+
+const Right = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff69b4;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 10px;
+  }
+`;
+
+const RightH1 = styled.h1`
+  margin-top: 0;
+  color: white;
+  font-size: 32px;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+`;
+
+const WhiteBtn = styled.button`
+  border: none;
+  outline: none;
+  padding: 12px 0;
+  background-color: white;
+  border-radius: 20px;
+  width: 160px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 10px 0;
+`;
+
+const GreenBtn = styled.button`
+  border: none;
+  outline: none;
+  padding: 12px 0;
+  background-color: #ff69b4;
+  color: white;
+  border-radius: 20px;
+  width: 160px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 10px;
+`;
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -138,7 +198,6 @@ const Login = () => {
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
-
   };
 
   const togglePasswordVisibility = () => {
@@ -174,58 +233,40 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.loginContainer}>
-      <div style={styles.loginFormContainer}>
-        <div style={styles.left}>
-          <form style={styles.formContainer} onSubmit={handleSubmit}>
-            <h1 style={styles.formContainerH1}>Login to Your Account</h1>
-            <input
-              type="text"
-              placeholder="Email"
-              name="email"
-              onChange={handleChange}
-              value={data.email}
-              style={styles.input}
-            />
-
-            <div style={styles.inputContainer}>
-              <input
+    <LoginContainer>
+      <LoginFormContainer>
+        <Left>
+          <FormContainer onSubmit={handleSubmit}>
+            <FormContainerH1>Login to Your Account</FormContainerH1>
+            <Input type="text" placeholder="Email" name="email" onChange={handleChange} value={data.email} />
+            <InputContainer>
+              <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 name="password"
                 onChange={handleChange}
                 value={data.password}
-                style={styles.input}
               />
-              <div style={styles.eyeIcon} onClick={togglePasswordVisibility}>
+              <EyeIcon onClick={togglePasswordVisibility}>
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </div>
-            </div>
-            {error && <div style={styles.errorMsg}>{error}</div>}
-            <div style={styles.checkboxContainer}>
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={handleRememberMe}
-                style={styles.checkbox}
-              />
+              </EyeIcon>
+            </InputContainer>
+            {error && <ErrorMsg>{error}</ErrorMsg>}
+            <CheckboxContainer>
+              <Checkbox type="checkbox" checked={rememberMe} onChange={handleRememberMe} />
               <label>Remember Me</label>
-            </div>
-            <button type="submit" style={styles.greenBtn}>
-              Sign In
-            </button>
-          </form>
-        </div>
-        <div style={styles.right}>
-          <h1 style={styles.rightH1}>New Here?</h1>
+            </CheckboxContainer>
+            <GreenBtn type="submit">Sign In</GreenBtn>
+          </FormContainer>
+        </Left>
+        <Right>
+          <RightH1>New Here?</RightH1>
           <Link to="/Sign-up">
-            <button type="button" style={styles.whiteBtn}>
-              Sign Up
-            </button>
+            <WhiteBtn>Sign Up</WhiteBtn>
           </Link>
-        </div>
-      </div>
-    </div>
+        </Right>
+      </LoginFormContainer>
+    </LoginContainer>
   );
 };
 

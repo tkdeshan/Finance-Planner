@@ -7,8 +7,7 @@ import InvestmentItem from "../IncomeItem/InvestmentItem";
 import InvestmentForm from "./InvestmentForm";
 
 function Investments() {
-  const { addIncome, investments, getInvestments, deleteInvestment, totalInvestments } =
-    useGlobalContext();
+  const { addIncome, investments, getInvestments, deleteInvestment, totalInvestments } = useGlobalContext();
 
   useEffect(() => {
     getInvestments();
@@ -18,7 +17,7 @@ function Investments() {
       <InnerLayout>
         <h1>Investments</h1>
         <h2 className="total-income">
-          Total Investments: <span>LKR{totalInvestments()}</span>
+          <span>Total Investments:</span> <span className="amount">LKR{totalInvestments()}</span>
         </h2>
         <div className="income-content">
           <div className="form-container">
@@ -65,7 +64,7 @@ const InvestmentStyled = styled.div`
     margin: 1rem 0;
     font-size: 2rem;
     gap: 0.5rem;
-    span {
+    .amount {
       font-size: 2.5rem;
       font-weight: 800;
       color: var(--color-green);
@@ -76,6 +75,27 @@ const InvestmentStyled = styled.div`
     gap: 2rem;
     .incomes {
       flex: 1;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+    }
+    .income-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+      .amount {
+        font-size: 1.5rem;
+      }
     }
   }
 `;

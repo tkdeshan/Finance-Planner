@@ -28,6 +28,10 @@ const ButtonStyled = styled.button`
   gap: 0.5rem;
   cursor: pointer;
   transition: all 0.4s ease-in-out;
+
+  @media (max-width: 640px) {
+    font-size: 12px;
+  }
 `;
 
 export default Button;

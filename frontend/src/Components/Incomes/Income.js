@@ -6,8 +6,7 @@ import Form from "../Form/Form";
 import IncomeItem from "../IncomeItem/IncomeItem";
 
 function Income() {
-  const { addIncome, incomes, getIncomes, deleteIncome, totalIncome } =
-    useGlobalContext();
+  const { addIncome, incomes, getIncomes, deleteIncome, totalIncome } = useGlobalContext();
 
   useEffect(() => {
     getIncomes();
@@ -17,7 +16,7 @@ function Income() {
       <InnerLayout>
         <h1>Incomes</h1>
         <h2 className="total-income">
-          Total Income: <span>LKR{totalIncome()}</span>
+          <span>Total Income:</span> <span className="amount">LKR{totalIncome()}</span>
         </h2>
         <div className="income-content">
           <div className="form-container">
@@ -25,8 +24,7 @@ function Income() {
           </div>
           <div className="incomes">
             {incomes.map((income) => {
-              const { _id, title, amount, date, category, description, type } =
-                income;
+              const { _id, title, amount, date, category, description, type } = income;
               return (
                 <IncomeItem
                   key={_id}
@@ -64,7 +62,7 @@ const IncomeStyled = styled.div`
     margin: 1rem 0;
     font-size: 2rem;
     gap: 0.5rem;
-    span {
+    .amount {
       font-size: 2.5rem;
       font-weight: 800;
       color: var(--color-green);
@@ -75,6 +73,27 @@ const IncomeStyled = styled.div`
     gap: 2rem;
     .incomes {
       flex: 1;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+    }
+    .income-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .total-income {
+      flex-direction: column;
+      font-size: 1.5rem;
+      .amount {
+        font-size: 1.5rem;
+      }
     }
   }
 `;

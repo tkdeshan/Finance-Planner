@@ -196,10 +196,11 @@ function SavingItem({ id, title, amount, date, category, description, deleteItem
         {isLoading ? (
           <Loader />
         ) : (
-          <>
+          <div className="full-content">
             <div className="icon">{type === "saving" ? savingsCatIcon() : categoryIcon()}</div>
             <div className="content">
               <h5>{title}</h5>
+              <p>{description}</p>
               <div className="inner-content">
                 <div className="text">
                   <p>LKR {amount}</p>
@@ -241,9 +242,8 @@ function SavingItem({ id, title, amount, date, category, description, deleteItem
                   />
                 </div>
               </div>
-              <p>{description}</p>
             </div>
-          </>
+          </div>
         )}
       </SavingItemStyled>
 
@@ -271,6 +271,14 @@ const SavingItemStyled = styled.div`
   gap: 1rem;
   width: 100%;
   color: #222260;
+
+  .full-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+  }
+
   .icon {
     width: 80px;
     height: 80px;
@@ -309,15 +317,14 @@ const SavingItemStyled = styled.div`
 
     .btn-con {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 1rem;
     }
 
     .inner-content {
       display: flex;
+      gap: 10px;
       justify-content: space-between;
-      align-items: center;
       .text {
         display: flex;
         align-items: center;
@@ -329,6 +336,29 @@ const SavingItemStyled = styled.div`
           color: var(--primary-color);
           opacity: 0.8;
         }
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.5rem;
+
+    .full-content {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .inner-content {
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+
+      i {
+        font-size: 2rem;
       }
     }
   }

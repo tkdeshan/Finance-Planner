@@ -6,25 +6,23 @@ import { menuItems } from "../../utils/menuItems";
 import { Link, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../context/globalContext";
 
-function Navigation({ active, setActive }) {
+function Navigation({ active, setActive, isNavOpen, handleMenuToggle }) {
   const navigate = useNavigate();
   const { setIsAuthenticated, getUserDetails, userDetails } = useGlobalContext();
 
   const handleSignOut = () => {
-    // Clear user authentication state and navigate to sign-in page
     setIsAuthenticated(false);
     navigate("/");
   };
 
   useEffect(() => {
-      getUserDetails();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    getUserDetails();
   }, []);
-    
+
   return (
-    <NavStyled>
+    <NavStyled isNavOpen={isNavOpen}>
       <div className="user-con">
-        <img src={avatar} alt="" />
+        <img src={avatar} alt="User Avatar" />
         <div className="text">
           <h2>
             <span>{userDetails?.firstName}</span>
@@ -54,15 +52,24 @@ function Navigation({ active, setActive }) {
 const NavStyled = styled.nav`
   padding: 2rem 1.5rem;
   width: 374px;
-  height: 100%;
+  height: 92%;
   background: rgba(252, 246, 249, 0.78);
   border: 3px solid #ffffff;
   backdrop-filter: blur(4.5px);
   border-radius: 32px;
   display: flex;
+  margin-top: 30px;
+  margin-bottom: 30px;
   flex-direction: column;
   justify-content: space-between;
   gap: 2rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: transform 0.3s ease-in-out;
+  transform: ${({ isNavOpen }) => (isNavOpen ? "translateX(0)" : "translateX(-100%)")};
+  z-index: 5;
+
   .user-con {
     height: 100px;
     display: flex;
@@ -146,6 +153,31 @@ const NavStyled = styled.nav`
         color: rgba(34, 34, 96, 1);
       }
     }
+  }
+
+  @media (min-width: 769px) {
+    .user-con img {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .user-con img {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    width: 100%;
+  }
+
+  @media (max-width: 1500px) {
+    height: 100%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
   }
 `;
 

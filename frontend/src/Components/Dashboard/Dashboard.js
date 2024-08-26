@@ -205,6 +205,7 @@ const DashboardStyled = styled.div`
         box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
         padding: 1rem;
         border-radius: 20px;
+        margin-top: 2rem;
 
         .salary-title {
           font-size: 1.2rem;
