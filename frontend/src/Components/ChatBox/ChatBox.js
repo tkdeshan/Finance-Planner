@@ -60,42 +60,36 @@ const ChatBox = ({ isOpen, onClose, recommendations, request }) => {
     }
   };
 
-  return (
-    <>
-      {isOpen && (
-        <Overlay>
-          <ChatBoxStyled>
-            <div className="header">
-              <h4>Chat with OpenAI</h4>
-              <Button icon={closeButton} onClick={onClose} />
+  return isOpen ? (
+    <Overlay>
+      <ChatBoxStyled>
+        <div className="header">
+          <h4>Chat with OpenAI</h4>
+          <Button icon={closeButton} onClick={onClose} />
+        </div>
+        <div className="chatbox-body">
+          {chatHistory.map((chat, index) => (
+            <div key={index} className={`message ${chat.sender === "user" ? "user-message" : "bot-message"}`}>
+              {chat.sender === "bot" ? (
+                <div dangerouslySetInnerHTML={{ __html: chat.message }} />
+              ) : (
+                <p>{chat.message}</p>
+              )}
             </div>
-            <div className="chatbox-body">
-              {chatHistory.map((chat, index) => (
-                <div
-                  key={index}
-                  className={`message ${chat.sender === "user" ? "user-message" : "bot-message"}`}>
-                  {chat.sender === "bot" ? (
-                    <div dangerouslySetInnerHTML={{ __html: chat.message }} />
-                  ) : (
-                    <p>{chat.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="footer">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message"
-              />
-              <Button icon={sendMessage} onClick={handleSendMessage} />
-            </div>
-          </ChatBoxStyled>
-        </Overlay>
-      )}
-    </>
-  );
+          ))}
+        </div>
+        <div className="footer">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message"
+          />
+          <Button icon={sendMessage} onClick={handleSendMessage} />
+        </div>
+      </ChatBoxStyled>
+    </Overlay>
+  ) : null;
 };
 
 const Overlay = styled.div`
@@ -104,11 +98,11 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  z-index: 1000;
 `;
 
 const ChatBoxStyled = styled.div`
@@ -121,8 +115,6 @@ const ChatBoxStyled = styled.div`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  
-  z-index: 10000; /* Ensure it is below the ChatBox */
 
   .header {
     padding: 0.5rem;

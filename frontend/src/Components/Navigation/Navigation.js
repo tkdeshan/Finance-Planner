@@ -27,9 +27,9 @@ function Navigation({ active, setActive }) {
         <img src={avatar} alt="" />
         <div className="text">
           <h2>
-            <span>{userDetails?.firstName || "Mike"}</span>
+            <span>{userDetails?.firstName}</span>
             <br />
-            <span>{userDetails?.lastName || "Sander"}</span>
+            <span>{userDetails?.lastName}</span>
           </h2>
           <p>{userDetails?.email}</p>
         </div>
