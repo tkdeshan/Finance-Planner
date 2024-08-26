@@ -254,7 +254,7 @@ const SignUp = () => {
         </Left>
         <Right>
           <RightH1>Welcome Back!</RightH1>
-          <Link to="/Login">
+          <Link to="/">
             <WhiteBtn>Sign In</WhiteBtn>
           </Link>
         </Right>
