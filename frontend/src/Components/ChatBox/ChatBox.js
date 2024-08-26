@@ -121,7 +121,7 @@ const ChatBoxStyled = styled.div`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  position: relative; /* Set position to relative */
+  
   z-index: 10000; /* Ensure it is below the ChatBox */
 
   .header {
@@ -147,7 +147,7 @@ const ChatBoxStyled = styled.div`
     .user-message {
       margin-left: auto;
       align-self: flex-end;
-      background: #e6e8e8;
+      background: #f0f0f0;
       color: #000;
       text-align: right;
     }
