@@ -168,7 +168,8 @@ const ExpenseFormStyled = styled.form`
     }
   }
   .input-control {
-    input {
+    input,
+    textarea {
       width: 100%;
     }
   }
