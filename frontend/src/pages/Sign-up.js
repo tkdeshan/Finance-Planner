@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUpContainer = styled.div`
   width: 100%;
-  min-height: 100vh;
+  min-height: 85vh;
   background-color: #f5f5f5;
   display: flex;
   align-items: center;

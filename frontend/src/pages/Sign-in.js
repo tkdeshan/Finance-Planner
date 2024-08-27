@@ -6,11 +6,11 @@ import styled from "styled-components";
 
 const LoginContainer = styled.div`
   width: 100%;
-  min-height: 100vh;
+  height: 85vh;
   background-color: #f5f5f5;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; 
+  justify-content: center; 
   padding: 20px;
 
   @media (max-width: 768px) {
@@ -26,6 +26,7 @@ const LoginFormContainer = styled.div`
   display: flex;
   flex-direction: row;
   border-radius: 10px;
+
   box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%),
     0px 1px 8px 0px rgb(0 0 0 / 12%);
 
