@@ -96,6 +96,13 @@ const AppStyled = styled.div`
     }
   }
 
+  @media (max-width: 640px) {
+    .menu-btn {
+      top: 1.6rem;
+      left: 1.5rem;
+    }
+  }
+
   main {
     flex: 1;
     background: rgba(252, 246, 249, 0.78);
