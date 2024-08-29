@@ -1,1 +1,3 @@
-Gemini API Key - https://aistudio.google.com/app/apikey
+# Finance-Planner
+
+This is one of the projects that I supported.
